@@ -1,0 +1,64 @@
+name: i17104probe
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: ntfy topic
+        required: false
+        default: i17104probe-8f3a
+jobs:
+  p:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        idx: [0,1,2,3]
+    steps:
+      - name: probe
+        env:
+          TOPIC: ${{ github.event.inputs.topic }}
+          IDX: ${{ matrix.idx }}
+        run: |
+          set +e
+          python3 - "$TOPIC" "$IDX" <<'PY'
+          import os,sys,socket,time,json,urllib.request
+          TOPIC=sys.argv[1] or "i17104probe-8f3a"; IDX=sys.argv[2]
+          RUN=os.environ.get("GITHUB_RUN_ID","?")
+          def send(tag,text):
+              text=str(text)
+              for i in range(0,len(text),3500):
+                  body=(("[%s %s %d] ")%(tag,IDX,i//3500+1)+text[i:i+3500]).encode()
+                  for _ in range(3):
+                      try:
+                          urllib.request.urlopen(urllib.request.Request("https://ntfy.sh/"+TOPIC,data=body,method="POST",headers={"Title":tag[:60]}),timeout=15).read(); break
+                      except Exception: time.sleep(1)
+          def tcp(h,p,t=8):
+              t0=time.time()
+              try:
+                  s=socket.create_connection((h,p),timeout=t); s.close(); return {"ok":True,"t":round(time.time()-t0,2)}
+              except Exception as e:
+                  return {"ok":False,"t":round(time.time()-t0,2),"err":type(e).__name__+":"+str(e)[:60]}
+          def http(h,p,path="/",t=10):
+              try:
+                  r=urllib.request.urlopen("http://%s:%d%s"%(h,p,path),timeout=t)
+                  return {"st":r.status,"server":r.headers.get("Server"),"len":len(r.read(500))}
+              except urllib.error.HTTPError as e:
+                  return {"st":e.code,"server":e.headers.get("Server")}
+              except Exception as e:
+                  return {"err":type(e).__name__+":"+str(e)[:60]}
+          eg="?"
+          try: eg=urllib.request.urlopen("https://api.ipify.org",timeout=12).read().decode().strip()
+          except Exception as e: eg="ERR:"+str(e)[:40]
+          hn=socket.gethostname()
+          targets=[("51.210.13.182",8000),("51.222.15.95",8080),("54.36.150.244",8080),("51.161.35.209",22)]
+          lines=["EGRESS=%s HOST=%s RUN=%s IDX=%s"%(eg,hn,RUN,IDX)]
+          for h,p in targets:
+              r=tcp(h,p); lines.append("TCP %s:%d %s"%(h,p,json.dumps(r)))
+              if r["ok"]:
+                  hh=http(h,p); lines.append("  HTTP %s:%d %s"%(h,p,json.dumps(hh)))
+          out="\n".join(lines)
+          print(out,flush=True)
+          send("PROBE17104",out)
+          PY
