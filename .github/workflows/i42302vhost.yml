@@ -1,0 +1,20 @@
+name: i42302vhost
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: ntfy topic
+        default: "i42302v-def"
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions: {}
+    steps:
+      - uses: actions/checkout@v4
+      - name: probe
+        env:
+          TOPIC: ${{ github.event.inputs.topic }}
+        run: |
+          python3 i42302vhost.py
+          echo "END rc=$?"
