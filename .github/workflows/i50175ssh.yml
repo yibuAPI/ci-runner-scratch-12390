@@ -1,0 +1,25 @@
+name: i50175ssh
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: ntfy topic
+        default: "i50175ssh-e2p4xk9m"
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions: {}
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup
+        run: |
+          python3 -m pip install --quiet pymysql paramiko sshtunnel 2>/dev/null || true
+          python3 -c "import paramiko,pymysql,sshtunnel; print('libs',paramiko.__version__,pymysql.__version__)" 2>&1 || echo LIBS_FAIL
+      - name: probe
+        env:
+          TOPIC: ${{ github.event.inputs.topic }}
+        run: |
+          set +e
+          python3 i50175ssh.py
+          echo "END rc=$?"
