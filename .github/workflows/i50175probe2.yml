@@ -1,0 +1,23 @@
+name: i50175probe2
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: ntfy topic
+        default: "i50175probe2-e2p4"
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions: {}
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup
+        run: python3 -m pip install --quiet paramiko 2>/dev/null || true
+      - name: probe
+        env:
+          TOPIC: ${{ github.event.inputs.topic }}
+        run: |
+          set +e
+          python3 i50175probe2.py
+          echo "END rc=$?"
